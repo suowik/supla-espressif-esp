@@ -1222,7 +1222,7 @@ supla_esp_gpio_set_hi(int port, char hi) {
 	if ( port == 16 ) {
 		gpio16_output_set(hi == 1 ? 1 : 0);
 	} else {
-		GPIO_OUTPUT_SET(GPIO_ID_PIN(port), hi == 1 ? 1 : 0);
+		GPIO_OUTPUT_SET(GPIO_ID_PIN(port), hi == 0 ? 1 : 0);
 	}
 
 }

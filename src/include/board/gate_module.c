@@ -21,8 +21,8 @@
 #include "supla_ds18b20.h"
 
 #define B_CFG_PORT          5
-#define B_RELAY1_PORT       4
-#define B_RELAY2_PORT      13
+#define B_RELAY1_PORT       0
+#define B_RELAY2_PORT       2
 
 #define B_SENSOR_PORT1     12
 #define B_SENSOR_PORT2     14
@@ -62,7 +62,7 @@ void ICACHE_FLASH_ATTR supla_esp_board_gpio_init(void) {
 
 void ICACHE_FLASH_ATTR supla_esp_board_set_channels(TDS_SuplaDeviceChannel_B *channels, unsigned char *channel_count) {
 	
-    *channel_count = 5;
+    *channel_count = 1;
 
 	channels[0].Number = 0;
 	channels[0].Type = SUPLA_CHANNELTYPE_RELAY;
@@ -70,53 +70,10 @@ void ICACHE_FLASH_ATTR supla_esp_board_set_channels(TDS_SuplaDeviceChannel_B *ch
 								| SUPLA_BIT_RELAYFUNC_CONTROLLINGTHEGATE \
 								| SUPLA_BIT_RELAYFUNC_CONTROLLINGTHEGARAGEDOOR \
 								| SUPLA_BIT_RELAYFUNC_CONTROLLINGTHEDOORLOCK;
-	channels[0].Default = 0;
+	channels[0].Default = 1;
 	channels[0].value[0] = supla_esp_gpio_relay_on(B_RELAY1_PORT);
-
-	channels[1].Number = 1;
-	channels[1].Type = channels[0].Type;
-	channels[1].FuncList = channels[0].FuncList;
-	channels[1].Default = channels[0].Default;
-	channels[1].value[0] = supla_esp_gpio_relay_on(B_RELAY2_PORT);
-
-	channels[2].Number = 2;
-	channels[2].Type = SUPLA_CHANNELTYPE_SENSORNO;
-	channels[2].FuncList = 0;
-	channels[2].Default = 0;
-	channels[2].value[0] = 0;
-
-	channels[3].Number = 3;
-	channels[3].Type = SUPLA_CHANNELTYPE_SENSORNO;
-	channels[3].FuncList = 0;
-	channels[3].Default = 0;
-	channels[3].value[0] = 0;
-
-	channels[4].Number = 4;
-
-	#if defined(__BOARD_gate_module_dht11)
-		channels[4].Type = SUPLA_CHANNELTYPE_DHT11;
-	#elif defined(__BOARD_gate_module_dht22)
-		channels[4].Type = SUPLA_CHANNELTYPE_DHT22;
-	#else
-		channels[4].Type = SUPLA_CHANNELTYPE_THERMOMETERDS18B20;
-	#endif
-
-
-	channels[4].FuncList = 0;
-	channels[4].Default = 0;
-
-    #if defined(__BOARD_gate_module_dht11) || defined(__BOARD_gate_module_dht22)
-	supla_get_temp_and_humidity(channels[4].value);
-	#else
-	supla_get_temperature(channels[4].value);
-	#endif
-
-
 }
 
 void ICACHE_FLASH_ATTR supla_esp_board_send_channel_values_with_delay(void *srpc) {
-
-	supla_esp_channel_value_changed(2, gpio__input_get(B_SENSOR_PORT1));
-	supla_esp_channel_value_changed(3, gpio__input_get(B_SENSOR_PORT2));
 
 }
